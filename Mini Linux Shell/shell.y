@@ -45,13 +45,13 @@ command: simple_command
         ;
 
 simple_command:	
-	command_and_args iomodifier_opt FYON {
+	command_and_args iomodifier_opt FYON { /*FYON NEWLINE*/
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
 	}
 	| 
 
-	command_and_args iomodifier_opt OR {
+	command_and_args iomodifier_opt OR {    /*commands*/
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
 	}
@@ -80,7 +80,7 @@ argument:
 	WORD {
                printf("   Yacc: insert argument \"%s\"\n", $1);
 
-	       Command::_currentSimpleCommand->insertArgument( $1 );\
+	       Command::_currentSimpleCommand->insertArgument( $1 );/*\*/
 	}
 	;
 
@@ -109,8 +109,28 @@ iomodifier_opt:
 		printf("   Yacc: insert input \"%s\"\n", $2);
 		Command::_currentCommand._inputFile = $2;
 	}
-	| /* can be empty */ 
-	
+	| GREATFYON WORD{
+		printf("   Yacc: insert output \"%s\"\n", $2);
+		Command::_currentCommand._errFile = $2;
+		Command::_currentCommand.write= 0;
+	}
+	| BIGBIGFYON WORD{
+		printf("   Yacc: insert output \"%s\"\n", $2);
+		Command::_currentCommand._errFile = $2;
+		Command::_currentCommand.write= 1;
+	}
+	| FYONGREAT WORD{
+		printf("   Yacc: insert output \"%s\"\n", $2);
+		Command::_currentCommand._errFile = $2;
+		//Command::_currentCommand._outFile = $2;
+		Command::_currentCommand.write= 0;
+	}
+	| FYONBIGBIG WORD{
+		printf("   Yacc: insert output \"%s\"\n", $2);
+		Command::_currentCommand._errFile = $2;
+		Command::_currentCommand.write= 1;
+	}
+	| /* can be empty */
 	;
 
 %%

@@ -23,12 +23,13 @@ struct Command {
 	char * _inputFile;
 	char * _errFile;
 	int _background;
+	/*int write;*/
 
 	void prompt();
 	void print();
 	void execute();
 	void clear();
-	
+
 	Command();
 	void insertSimpleCommand( SimpleCommand * simpleCommand );
 

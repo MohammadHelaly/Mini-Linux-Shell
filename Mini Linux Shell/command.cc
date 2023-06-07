@@ -23,7 +23,9 @@
 #include <signal.h>
 #include <string.h>
 #include <time.h>
-int cd=0;
+#include <fstream>
+#include <iostream>
+int flag=0;
 SimpleCommand::SimpleCommand()
 {
 	// Creat available space for 5 arguments
@@ -135,6 +137,7 @@ Command::print()
 	
 }
 
+/*
 void log(int sig){
 time_t x;
 time(&x);
@@ -144,10 +147,24 @@ fprintf(file,"%s",ctime(&x) );
 fclose(file);
 return;
 }
+*/
+
+/*FILE* log;*/
+void log(int sig) {
+    int status, childPID;
+    childPID = wait(&status);
+    time_t currentTime = time(0);
+
+    if (childPID >= 0) {
+		FILE *file=fopen("log","a");
+        fprintf(file, "child process ID: %d    termination status: %d    termination time: %s\n", childPID, status, ctime(&currentTime));
+		fclose(file);
+    }
+}
+
 void
 Command::execute()
 {	
-	
 	
 	// Don't do anything if there are no simple commands
 	if ( _numberOfSimpleCommands == 0 ) {
@@ -155,69 +172,125 @@ Command::execute()
 		return;
 	}
 	
-	
 	if(strcmp(_simpleCommands[0]->_arguments[0] ,"exit" ) ==0){
-	printf("GoodBye\n");
+	printf("Goodbye.\n");
 	exit(0);
-	cd=1;
+	flag=1;
 	}
 	
 	signal(SIGCHLD,log);	
 	
 	if(strcmp(_simpleCommands[0]->_arguments[0] ,"cd" ) ==0){
 
-	if(_simpleCommands[0]->_arguments[1]){
-	chdir(_simpleCommands[0]->_arguments[1]);
-	}
-	else{
-		chdir("/home/usefwalid");
-	}
-	
+		if(_simpleCommands[0]->_numberOfArguments > 1){
+			perror("Too many arguments.\n");
+		}
+		else if(_simpleCommands[0]->_arguments[1]){
+			chdir(_simpleCommands[0]->_arguments[1]);
+			printf("Current directory: %s.\n",_simpleCommands[0]->_arguments[1]);
+		}
+		else{
+			chdir(getenv("HOME"));
+			printf("Current directory: HOME.");
+		}
 	}
 
-	
-	if(!cd){
-	
-	int i=0;
-	char *com=_simpleCommands[0]->_arguments[0];
-	char *arg[_simpleCommands[0]->_numberOfArguments + 1];
+	if(!flag){
 
-		for(i=0;i<_simpleCommands[0]->_numberOfArguments;i++){
-	arg[i] = _simpleCommands[0]->_arguments[i] ;
+	print();
 
+	pid_t pid;
+	int status,def_in=0,def_out=0,def_err=0,out=0,in=0,err=0;
+	int pipes [_numberOfSimpleCommands-1][2];	
+
+	def_in = dup(0);
+	def_out = dup(1);
+	def_err = dup(2);
+
+	if(_errFile){
+		if(!write)
+		err = creat(_errFile,0777);
+		else
+		err = open(_errFile,O_WRONLY|O_APPEND|O_CREAT,0777);
+		dup2(err,2);
+		dup2(err,1);
 	}
-	arg[i] = NULL;
-	int pid=fork();
+	if(_outFile){
+		if(!write)
+		out = creat(_outFile,0777);
+		else{
+		out = open(_outFile,O_WRONLY|O_APPEND|O_CREAT,0777);
+		}
+		dup2(out,1);
+	}
+	if(_inputFile){
+		in = open(_inputFile,O_RDONLY);
+		dup2(in,0);
+	}
+	
+	for(int i=0 ; i<_numberOfSimpleCommands;i++){
+
+		if(_numberOfSimpleCommands>1){
+			pipe(pipes[i]);
+			if(i==0){
+				printf("Output pipe: %d\n",i);
+				dup2(pipes[0][1],1);
+				}
+			if(i>=1 && i < _numberOfSimpleCommands-1){
+				printf("Input/Output pipe: %d\n",i);
+				dup2(pipes[i-1][0],0);
+				dup2(pipes[i][1],1);
+			}
+			if(i==_numberOfSimpleCommands-1){
+				printf("Input pipe: %d\n",i);
+				dup2(_outFile?out:def_out,1);
+				dup2(pipes[i-1][0],0);
+			}
+		}
+
+	char *com=_simpleCommands[i]->_arguments[0];
+	char *arg[_simpleCommands[i]->_numberOfArguments + 1];
+
+	for(j=0;j<_simpleCommands[i]->_numberOfArguments;j++){
+	arg[j] = _simpleCommands[i]->_arguments[j] ;
+	}
+	arg[j] = NULL;
+
+	signal(SIGCHLD,log);
+	pid=fork();
+
 	if(pid==0){
-	
-	
-	if(_outFile!=NULL){
-	int file=open(_outFile, O_RDWR | O_CREAT ,0666);
-	dup2(file,1);
-	
-	}	
-	if(_inputFile!=NULL){
-	int file=open(_inputFile, O_RDWR ,0666);
-	dup2(file,0);	
-	}	
+		if(_numberOfSimpleCommands>1){
+			if(i<_numberOfSimpleCommands-1){
+				close(pipes[i][1]);
+			}
+			if(i>0){ 
+				close(pipes[i-1][0]);}
+			}	
+
 	execvp(com,arg);
-	
 
 	}	
 	if(pid!=0){
-
-	waitpid(0,NULL,0);
-
+		if(_numberOfSimpleCommands>1){
+			if(i<_numberOfSimpleCommands-1){
+				close(pipes[i][1]);
+				}
+			if(i>0){ 
+					close(pipes[i-1][0]);
+				}
+			}
+		if(!_background){
+			/*waitpid(0,NULL,0);*/
+			waitpid(pid,NULL,0);
+			signal(SIGCHLD,log);
+		}
 	}
-	
+	}
 
-	
-	print();
-
-	// Add execution here
-	// For every simple command fork a new process
-	// Setup i/o redirection
-	// and call exec
+	dup2(def_in,0);
+	dup2(def_out,1);
+	dup2(def_err,2);
 
 	// Clear to prepare for next command
 	clear();
@@ -225,11 +298,9 @@ Command::execute()
 	// Print new prompt
 	prompt();
     }
-    else
-    exit(0);
-
+    /*else
+    exit(0);*/
 }
-
 
 // Shell implementation
 
