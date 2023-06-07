@@ -133,7 +133,7 @@ Command::print()
 	printf( "  ------------ ------------ ------------ ------------\n" );
 	printf( "  %-12s %-12s %-12s %-12s\n", _outFile?_outFile:"default",
 		_inputFile?_inputFile:"default", _errFile?_errFile:"default",
-		_background?"YES":"NO",write?"Append":"Default");
+		_background?"YES":"NO");
 	printf( "\n\n" );
 	
 }
@@ -195,7 +195,6 @@ Command::execute()
 	if(!flag){
 
 	print();
-	printf("\nCommand: %s\n",_simpleCommands[0]->_arguments[0]);
 
 	pid_t pid;
 	int status,defaultin=0,defaultout=0,defaulterr=0,out=0,in=0,err=0;
@@ -230,21 +229,17 @@ Command::execute()
 		if(_numberOfSimpleCommands>1){
 			pipe(fdpipe[i]);
 			if(i==0){
-				printf("Output pipe: %d\n",i);
 				dup2(fdpipe[0][1],1);
 				}
 			if(i>=1 && i < _numberOfSimpleCommands-1){
-				printf("Input/Output pipe: %d\n",i);
 				dup2(fdpipe[i-1][0],0);
 				dup2(fdpipe[i][1],1);
 			}
 			if(i==_numberOfSimpleCommands-1){
-				printf("Input pipe: %d\n",i);
 				dup2(_outFile?out:defaultout,1);
 				dup2(fdpipe[i-1][0],0);
 			}
 		}
-
 	char *com=_simpleCommands[i]->_arguments[0];
 	char *arg[_simpleCommands[i]->_numberOfArguments + 1];
 	int j = 0;
