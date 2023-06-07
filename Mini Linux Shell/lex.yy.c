@@ -742,66 +742,94 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 23 "shell.l"
+#line 22 "shell.l"
 {
 		return OR;
 	}	
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 27 "shell.l"
+#line 25 "shell.l"
 {
 		/* Discard spaces and tabs */
      	}	
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 30 "shell.l"
+#line 28 "shell.l"
 {
 		return SMALLER;
 	}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 33 "shell.l"
+#line 31 "shell.l"
 {
 		return GREAT;
 	}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 36 "shell.l"
+#line 34 "shell.l"
 {
 		return BIGBIG;
 	}	
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 40 "shell.l"
+#line 37 "shell.l"
 {
 		return FYON;
 	}	
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 45 "shell.l"
+#line 40 "shell.l"
+{
+		return GREATFYON;
+	}
+	YY_BREAK
+case 9:
+YY_RULE_SETUP
+#line 43 "shell.l"
+{
+		return BIGBIGFYON;
+	}
+	YY_BREAK
+case 10:
+YY_RULE_SETUP
+#line 46 "shell.l"
+{
+		return FYONGREAT;
+	}	
+	YY_BREAK
+case 11:
+YY_RULE_SETUP
+#line 49 "shell.l"
+{
+		return FYONBIGBIG;
+	}	
+	YY_BREAK	
+case 12:
+YY_RULE_SETUP
+#line 52 "shell.l"
 {
 		/* Assume that file names have only alpha chars */
 		yylval.string_val = strdup(yytext);
 		return WORD;
 	}
 	YY_BREAK
-case 9:
+case 13:
 YY_RULE_SETUP
-#line 51 "shell.l"
+#line 57 "shell.l"
 {
 		/* Invalid character in input */
 		return NOTOKEN;
 	}
 	YY_BREAK
-case 10:
+case 14:
 YY_RULE_SETUP
-#line 56 "shell.l"
+#line 62 "shell.l"
 ECHO;
 	YY_BREAK
 #line 808 "lex.yy.c"

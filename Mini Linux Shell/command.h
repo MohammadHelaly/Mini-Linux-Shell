@@ -23,7 +23,6 @@ struct Command {
 	char * _inputFile;
 	char * _errFile;
 	int _background;
-	/*int write;*/
 
 	void prompt();
 	void print();
