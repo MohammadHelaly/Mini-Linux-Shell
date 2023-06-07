@@ -181,11 +181,7 @@ Command::execute()
 	signal(SIGCHLD,log);	
 	
 	if(strcmp(_simpleCommands[0]->_arguments[0] ,"cd" ) ==0){
-
-		if(_simpleCommands[0]->_numberOfArguments > 2){
-			perror("Too many arguments.\n");
-		}
-		else if(_simpleCommands[0]->_arguments[1]){
+		if(_simpleCommands[0]->_arguments[1]){
 			chdir(_simpleCommands[0]->_arguments[1]);
 			printf("Current directory: %s.\n",_simpleCommands[0]->_arguments[1]);
 		}
@@ -227,7 +223,6 @@ Command::execute()
 		in = open(_inputFile,O_RDONLY);
 		dup2(in,0);
 	}
-	
 	for(int i=0 ; i<_numberOfSimpleCommands;i++){
 
 		if(_numberOfSimpleCommands>1){
@@ -260,13 +255,17 @@ Command::execute()
 	pid=fork();
 
 	if(pid==0){
-		if(_numberOfSimpleCommands>1){
-			if(i<_numberOfSimpleCommands-1){
-				close(pipes[i][1]);
-			}
-			if(i>0){ 
-				close(pipes[i-1][0]);}
-			}	
+
+	if(_numberOfSimpleCommands>1){
+	
+	if(i<_numberOfSimpleCommands-1){
+		close(pipes[i][1]);
+	}
+	
+	if(i>0){ 
+		close(pipes[i-1][0]);
+	}
+	}	
 
 	execvp(com,arg);
 
@@ -282,7 +281,8 @@ Command::execute()
 			}
 		if(!_background){
 			/*waitpid(0,NULL,0);*/
-			waitpid(pid,NULL,0);
+			int status;
+			waitpid(pid,&status,0);
 			signal(SIGCHLD,log);
 		}
 	}
