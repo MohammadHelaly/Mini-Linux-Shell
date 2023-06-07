@@ -1179,9 +1179,10 @@ yyreduce:
 #line 48 "shell.y"
                                              { /*FYON NEWLINE*/
 		printf("   Yacc: Execute command\n");
+    Command::_currentCommand._background= 1;
 		Command::_currentCommand.execute();
 	}
-#line 1185 "y.tab.c"
+#line 1186 "y.tab.c"
     break;
 
   case 7: /* simple_command: command_and_args iomodifier_opt OR  */
@@ -1190,7 +1191,7 @@ yyreduce:
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
 	}
-#line 1194 "y.tab.c"
+#line 1195 "y.tab.c"
     break;
 
   case 8: /* simple_command: command_and_args iomodifier_opt NEWLINE  */
@@ -1199,13 +1200,13 @@ yyreduce:
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
 	}
-#line 1203 "y.tab.c"
+#line 1204 "y.tab.c"
     break;
 
   case 10: /* simple_command: error NEWLINE  */
 #line 64 "shell.y"
                         { yyerrok; }
-#line 1209 "y.tab.c"
+#line 1210 "y.tab.c"
     break;
 
   case 11: /* command_and_args: command_word arg_list  */
@@ -1214,7 +1215,7 @@ yyreduce:
 		Command::_currentCommand.
 			insertSimpleCommand( Command::_currentSimpleCommand );
 	}
-#line 1218 "y.tab.c"
+#line 1219 "y.tab.c"
     break;
 
   case 14: /* argument: WORD  */
@@ -1224,7 +1225,7 @@ yyreduce:
 
 	       Command::_currentSimpleCommand->insertArgument( (yyvsp[0].string_val) );/*\*/
 	}
-#line 1228 "y.tab.c"
+#line 1229 "y.tab.c"
     break;
 
   case 15: /* command_word: WORD  */
@@ -1235,34 +1236,35 @@ yyreduce:
 	       Command::_currentSimpleCommand = new SimpleCommand();
 	       Command::_currentSimpleCommand->insertArgument( (yyvsp[0].string_val) );
 	}
-#line 1239 "y.tab.c"
+#line 1240 "y.tab.c"
     break;
 
   case 16: /* iomodifier_opt: GREAT WORD  */
 #line 97 "shell.y"
                    {
-		printf("   Yacc: insert output \"%s\"\n", (yyvsp[0].string_val));
-		Command::_currentCommand._outFile = (yyvsp[0].string_val);
+		printf("   Yacc: insert output \"%s\"\n", (yyvsp[-1].string_val));
+		Command::_currentCommand._outFile = (yyvsp[-1].string_val);
 	}
-#line 1248 "y.tab.c"
+#line 1249 "y.tab.c"
     break;
 
   case 17: /* iomodifier_opt: BIGBIG WORD  */
 #line 102 "shell.y"
                     {
-		printf("   Yacc: insert output \"%s\"\n", (yyvsp[0].string_val));
-		Command::_currentCommand._outFile = (yyvsp[0].string_val);
+		printf("   Yacc: insert output \"%s\"\n", (yyvsp[-1].string_val));
+		Command::_currentCommand._outFile = (yyvsp[-1].string_val);		
+    Command::_currentCommand.write= 1;
 	}
-#line 1257 "y.tab.c"
+#line 1259 "y.tab.c"
     break;
 
   case 18: /* iomodifier_opt: SMALLER WORD  */
 #line 108 "shell.y"
                      {
-		printf("   Yacc: insert input \"%s\"\n", (yyvsp[0].string_val));
-		Command::_currentCommand._inputFile = (yyvsp[0].string_val);
+		printf("   Yacc: insert input \"%s\"\n", (yyvsp[-1].string_val));
+		Command::_currentCommand._inputFile = (yyvsp[-1].string_val);
 	}
-#line 1266 "y.tab.c"
+#line 1268 "y.tab.c"
     break;
 
   case 19: /* iomodifier_opt: GREATFYON WORD  */
@@ -1272,7 +1274,7 @@ yyreduce:
 		Command::_currentCommand._errFile = (yyvsp[0].string_val);
 		Command::_currentCommand.write= 0;
 	}
-#line 1276 "y.tab.c"
+#line 1278 "y.tab.c"
     break;
 
   case 20: /* iomodifier_opt: BIGBIGFYON WORD  */
@@ -1282,7 +1284,7 @@ yyreduce:
 		Command::_currentCommand._errFile = (yyvsp[0].string_val);
 		Command::_currentCommand.write= 1;
 	}
-#line 1286 "y.tab.c"
+#line 1288 "y.tab.c"
     break;
 
   case 21: /* iomodifier_opt: FYONGREAT WORD  */
@@ -1293,7 +1295,7 @@ yyreduce:
 		//Command::_currentCommand._outFile = $2;
 		Command::_currentCommand.write= 0;
 	}
-#line 1297 "y.tab.c"
+#line 1299 "y.tab.c"
     break;
 
   case 22: /* iomodifier_opt: FYONBIGBIG WORD  */
@@ -1303,11 +1305,11 @@ yyreduce:
 		Command::_currentCommand._errFile = (yyvsp[0].string_val);
 		Command::_currentCommand.write= 1;
 	}
-#line 1307 "y.tab.c"
+#line 1309 "y.tab.c"
     break;
 
 
-#line 1311 "y.tab.c"
+#line 1313 "y.tab.c"
 
       default: break;
     }

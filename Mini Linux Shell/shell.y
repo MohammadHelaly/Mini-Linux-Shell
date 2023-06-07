@@ -45,12 +45,12 @@ command: simple_command
         ;
 
 simple_command:	
-	command_and_args iomodifier_opt FYON { /*FYON NEWLINE*/
+	command_and_args iomodifier_opt FYON NEWLINE { /*FYON NEWLINE*/
 		printf("   Yacc: Execute command\n");
+		Command::_currentCommand._background= 1;
 		Command::_currentCommand.execute();
 	}
 	| 
-
 	command_and_args iomodifier_opt OR {    /*commands*/
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
@@ -102,9 +102,9 @@ iomodifier_opt:
 	BIGBIG WORD {
 		printf("   Yacc: insert output \"%s\"\n", $2);
 		Command::_currentCommand._outFile = $2;
+		Command::_currentCommand.write= 1;
 	}
 	| /* can be empty */ 
-	
 	SMALLER WORD {
 		printf("   Yacc: insert input \"%s\"\n", $2);
 		Command::_currentCommand._inputFile = $2;
