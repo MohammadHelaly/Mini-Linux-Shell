@@ -196,12 +196,12 @@ Command::execute()
 	print();
 
 	pid_t pid;
-	int status,def_in=0,def_out=0,def_err=0,out=0,in=0,err=0;
-	int pipes [_numberOfSimpleCommands-1][2];	
+	int status,defaultin=0,defaultout=0,defaulterr=0,out=0,in=0,err=0;
+	int fdpipepipes [_numberOfSimpleCommands-1][2];	
 
-	def_in = dup(0);
-	def_out = dup(1);
-	def_err = dup(2);
+	defaultin = dup(0);
+	defaultout = dup(1);
+	defaulterr = dup(2);
 
 	if(_errFile){
 		if(!write)
@@ -226,20 +226,20 @@ Command::execute()
 	for(int i=0 ; i<_numberOfSimpleCommands;i++){
 
 		if(_numberOfSimpleCommands>1){
-			pipe(pipes[i]);
+			pipe(fdpipe[i]);
 			if(i==0){
 				printf("Output pipe: %d\n",i);
-				dup2(pipes[0][1],1);
+				dup2(fdpipe[0][1],1);
 				}
 			if(i>=1 && i < _numberOfSimpleCommands-1){
 				printf("Input/Output pipe: %d\n",i);
-				dup2(pipes[i-1][0],0);
-				dup2(pipes[i][1],1);
+				dup2(fdpipe[i-1][0],0);
+				dup2(fdpipe[i][1],1);
 			}
 			if(i==_numberOfSimpleCommands-1){
 				printf("Input pipe: %d\n",i);
-				dup2(_outFile?out:def_out,1);
-				dup2(pipes[i-1][0],0);
+				dup2(_outFile?out:defaultout,1);
+				dup2(fdpipe[i-1][0],0);
 			}
 		}
 
@@ -259,11 +259,11 @@ Command::execute()
 	if(_numberOfSimpleCommands>1){
 	
 	if(i<_numberOfSimpleCommands-1){
-		close(pipes[i][1]);
+		close(fdpipe[i][1]);
 	}
 	
 	if(i>0){ 
-		close(pipes[i-1][0]);
+		close(fdpipe[i-1][0]);
 	}
 	}	
 
@@ -273,10 +273,10 @@ Command::execute()
 	if(pid!=0){
 		if(_numberOfSimpleCommands>1){
 			if(i<_numberOfSimpleCommands-1){
-				close(pipes[i][1]);
+				close(fdpipe[i][1]);
 				}
 			if(i>0){ 
-					close(pipes[i-1][0]);
+					close(fdpipe[i-1][0]);
 				}
 			}
 		if(!_background){
@@ -288,9 +288,9 @@ Command::execute()
 	}
 	}
 
-	dup2(def_in,0);
-	dup2(def_out,1);
-	dup2(def_err,2);
+	dup2(defaultin,0);
+	dup2(defaultout,1);
+	dup2(defaulterr,2);
 
 	// Clear to prepare for next command
 	clear();
