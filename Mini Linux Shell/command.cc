@@ -182,7 +182,7 @@ Command::execute()
 	
 	if(strcmp(_simpleCommands[0]->_arguments[0] ,"cd" ) ==0){
 
-		if(_simpleCommands[0]->_numberOfArguments > 1){
+		if(_simpleCommands[0]->_numberOfArguments > 2){
 			perror("Too many arguments.\n");
 		}
 		else if(_simpleCommands[0]->_arguments[1]){
@@ -250,7 +250,7 @@ Command::execute()
 
 	char *com=_simpleCommands[i]->_arguments[0];
 	char *arg[_simpleCommands[i]->_numberOfArguments + 1];
-
+	int j = 0;
 	for(j=0;j<_simpleCommands[i]->_numberOfArguments;j++){
 	arg[j] = _simpleCommands[i]->_arguments[j] ;
 	}

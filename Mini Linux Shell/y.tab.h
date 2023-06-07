@@ -61,7 +61,11 @@ extern int yydebug;
     SMALLER = 262,                 /* SMALLER  */
     OR = 263,                      /* OR  */
     BIGBIG = 264,                  /* BIGBIG  */
-    FYON = 265                     /* FYON  */
+    FYON = 265,                    /* FYON  */
+    GREATFYON = 266,               /* GREATFYON  */
+    BIGBIGFYON = 267,              /* BIGBIGFYON  */
+    FYONGREAT = 268,               /* FYONGREAT  */
+    FYONBIGBIG = 269               /* FYONBIGBIG  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -78,6 +82,10 @@ extern int yydebug;
 #define OR 263
 #define BIGBIG 264
 #define FYON 265
+#define GREATFYON 266
+#define BIGBIGFYON 267
+#define FYONGREAT 268
+#define FYONBIGBIG 269
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -88,7 +96,7 @@ union YYSTYPE
 		char   *string_val;
 	
 
-#line 92 "y.tab.h"
+#line 100 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

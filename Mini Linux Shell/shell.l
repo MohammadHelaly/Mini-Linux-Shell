@@ -37,19 +37,19 @@
 "&" 	{
 		return FYON;
 	}
->&		{
+">&"		{
 		return GREATFYON;
 		}
->>&		{
-		return BIBBIGFYON;
+">>&"		{
+		return BIGBIGFYON;
 		}
-&>		{
+"&>"		{
 		return FYONGREAT;
 		}
-&>>		{
+"&>>"		{
 		return FYONBIGBIG;
 		}		
-/*[^ \t\n][^ \t\n]* */ [^ \t\n\>\<\|\&]+{
+[^ \t\n\>\|\&][^ \t\n]+ {
 		/* Assume that file names have only alpha chars */
 		yylval.string_val = strdup(yytext);
 		return WORD;
