@@ -150,7 +150,7 @@ return;
 }
 */
 
-/*FILE* log;*/
+/*FILE* log;
 void log(int sig) {
     int status, childPID;
     childPID = wait(&status);
@@ -162,6 +162,7 @@ void log(int sig) {
 		fclose(file);
     }
 }
+*/
 
 void
 Command::execute()
@@ -179,7 +180,7 @@ Command::execute()
 	flag=1;
 	}
 	
-	signal(SIGCHLD,log);	
+	//signal(SIGCHLD,log);	
 	
 	if(strcmp(_simpleCommands[0]->_arguments[0] ,"cd" ) ==0){
 		if(_simpleCommands[0]->_arguments[1]){
@@ -248,7 +249,7 @@ Command::execute()
 	}
 	arg[j] = NULL;
 
-	signal(SIGCHLD,log);
+	//signal(SIGCHLD,log);
 	pid=fork();
 
 	if(pid==0){
@@ -278,9 +279,13 @@ Command::execute()
 			}
 		if(!_background){
 			/*waitpid(0,NULL,0);*/
-			int status;
-			waitpid(pid,&status,0);
-			signal(SIGCHLD,log);
+			int status,cid;
+			time_t currentTime = time(0);
+			cid=waitpid(pid,&status,0);
+	FILE *file=fopen("log","a");
+        fprintf(file, "    - child process ID: %d    termination status: %d    termination time: %s\n", cid, status, ctime(&currentTime));
+		fclose(file);
+			//signal(SIGCHLD,log);
 		}
 	}
 	}
@@ -316,6 +321,10 @@ int yyparse(void);
 int 
 main()
 {
+	time_t currentTime = time(0);
+	FILE *file=fopen("log","a");
+        fprintf(file, "\n- Session: %s\n\n",ctime(&currentTime));
+	fclose(file);
 	signal(SIGINT,SIG_IGN);
 	Command::_currentCommand.prompt();
 	yyparse();
