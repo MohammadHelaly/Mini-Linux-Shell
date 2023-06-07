@@ -195,6 +195,7 @@ Command::execute()
 	if(!flag){
 
 	print();
+	printf("\nCommand: %s\n",_simpleCommands[0]->_arguments[0]);
 
 	pid_t pid;
 	int status,defaultin=0,defaultout=0,defaulterr=0,out=0,in=0,err=0;

@@ -51,7 +51,7 @@ simple_command:
 		Command::_currentCommand.execute();
 	}
 	| 
-	command_and_args iomodifier_opt OR {    /*commands*/
+	command_and_args iomodifier_opt OR commands{    /*commands*/
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
 	}
